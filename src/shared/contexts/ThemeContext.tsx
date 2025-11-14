@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useMemo, useState } from "react";
-import { ReactNode } from "react";
+import { type ReactNode } from "react";
 import { ThemeProvider } from "@emotion/react";
 import { LightTheme, DarkTheme } from "../themes";
 import { Box } from "@mui/material";
