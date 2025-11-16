@@ -1,9 +1,11 @@
-import { ListingTool } from '../../shared/components';
-import { LayoutBasePage } from '../../shared/layouts';
+import { DetailTool } from '@/shared/components';
+import { LayoutBasePage } from '@/shared/layouts';
 
 export const Dashboard = () => {
   return (
-    <LayoutBasePage title="Página Inicial" listingTool={<ListingTool showSearch />}>
+    <LayoutBasePage title="Página Inicial" listingTool={
+      <DetailTool showButtonSaveAndBack />
+    }>
       Teste
     </LayoutBasePage>
   );

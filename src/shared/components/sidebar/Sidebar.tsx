@@ -4,18 +4,18 @@ import { type ReactNode } from 'react';
 import { useAppThemeContext, useDrawerContext } from '../../contexts';
 import { useMatch, useNavigate, useResolvedPath } from 'react-router';
 
-interface ISidebarProps {
+interface SidebarProps {
   children: ReactNode;
 }
 
-interface IListItemLinkProps {
+interface ListItemLinkProps {
   icon: string;
   label: string;
   to: string;
   onClick: (() => void) | undefined;
 }
 
-export const ListItemLink: React.FC<IListItemLinkProps> = ({ icon, label, to, onClick }) => {
+export const ListItemLink: React.FC<ListItemLinkProps> = ({ icon, label, to, onClick }) => {
   const navigate = useNavigate();
 
   const resolvedPath = useResolvedPath(to);
@@ -27,7 +27,7 @@ export const ListItemLink: React.FC<IListItemLinkProps> = ({ icon, label, to, on
   };
 
   return (
-    <ListItemButton onClick={handleClick} selected={!!match}>
+    <ListItemButton selected={!!match} onClick={handleClick}>
       <ListItemIcon>
         <Icon>{icon}</Icon>
       </ListItemIcon>
@@ -36,7 +36,7 @@ export const ListItemLink: React.FC<IListItemLinkProps> = ({ icon, label, to, on
   );
 };
 
-export const Sidebar: React.FC<ISidebarProps> = ({ children }) => {
+export const Sidebar: React.FC<SidebarProps> = ({ children }) => {
   const theme = useTheme();
   const smDown = useMediaQuery(theme.breakpoints.down('sm'));
   const { drawerOpen, toggleDrawerOpen, drawerOptions } = useDrawerContext();
