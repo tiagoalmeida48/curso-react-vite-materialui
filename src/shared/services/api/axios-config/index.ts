@@ -4,6 +4,9 @@ import { Environment } from "../../../environment";
 
 const api = axios.create({
     baseURL: Environment.API_BASE_URL,
+    headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+    }
 });
 
 api.interceptors.response.use(

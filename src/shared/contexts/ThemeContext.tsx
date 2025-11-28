@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useMemo, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { type ReactNode } from 'react';
 import { ThemeProvider } from '@emotion/react';
 import { LightTheme, DarkTheme } from '../themes';
@@ -15,6 +15,8 @@ interface ThemeProviderProps {
 
 const ThemeContext = createContext({} as ThemeContextData);
 
+const LOCAL_STORAGE_THEME_KEY = 'theme';
+
 export const useAppThemeContext = () => {
   return useContext(ThemeContext);
 };
@@ -23,7 +25,15 @@ export const AppThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => 
   const [themeName, setThemeName] = useState<'light' | 'dark'>('light');
 
   const toggleTheme = useCallback(() => {
-    setThemeName((oldThemeName) => (oldThemeName === 'light' ? 'dark' : 'light'));
+    localStorage.setItem(LOCAL_STORAGE_THEME_KEY, themeName === 'light' ? 'dark' : 'light');
+    setThemeName((oldThemeName) => oldThemeName === 'light' ? 'dark' : 'light');
+  }, [themeName]);
+
+  useEffect(() => {
+    const theme = localStorage.getItem(LOCAL_STORAGE_THEME_KEY);
+    if (theme) {
+      setThemeName(theme as 'light' | 'dark');
+    }
   }, []);
 
   const theme = useMemo(() => {

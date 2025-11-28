@@ -10,5 +10,4 @@ export interface IDetailUser {
     name: string;
     email: string;
     cityId: number;
-    password?: string;
 }

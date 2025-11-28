@@ -1,7 +1,7 @@
 import { Avatar, Box, Divider, Drawer, Icon, List, ListItemButton, ListItemIcon, ListItemText, useMediaQuery, useTheme } from '@mui/material';
 import Perfil from '../../../assets/Perfil Tiago.png';
 import { type ReactNode } from 'react';
-import { useAppThemeContext, useDrawerContext } from '../../contexts';
+import { useAppThemeContext, useAuthContext, useDrawerContext } from '../../contexts';
 import { useMatch, useNavigate, useResolvedPath } from 'react-router';
 
 interface SidebarProps {
@@ -41,6 +41,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ children }) => {
   const smDown = useMediaQuery(theme.breakpoints.down('sm'));
   const { drawerOpen, toggleDrawerOpen, drawerOptions } = useDrawerContext();
   const { toggleTheme } = useAppThemeContext();
+  const { logout } = useAuthContext();
 
   return (
     <>
@@ -73,6 +74,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ children }) => {
                   <Icon>dark_mode</Icon>
                 </ListItemIcon>
                 <ListItemText primary="Alternar Tema" />
+              </ListItemButton>
+              <ListItemButton onClick={logout}>
+                <ListItemIcon>
+                  <Icon>logout</Icon>
+                </ListItemIcon>
+                <ListItemText primary="Sair" />
               </ListItemButton>
             </List>
           </Box>

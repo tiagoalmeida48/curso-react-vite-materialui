@@ -1,11 +1,11 @@
 import { api } from '../axios-config';
 import { Environment } from '../../../environment';
-import type { TUsersWithTotalCount } from '../../../types';
-import type { IDetailUser, IUser } from '../../../interfaces';
+import type { TCitiesWithTotalCount } from '../../../types';
+import type { IDetailCity, ICity } from '../../../interfaces';
 
-const getAll = async (page = 1, filter = ''): Promise<TUsersWithTotalCount | Error> => {
+const getAll = async (page = 1, filter = ''): Promise<TCitiesWithTotalCount | Error> => {
   try {
-    const urlRelative = `users?_page=${page}&_limit=${Environment.LIMIT_LINE}&name_like=${filter}`;
+    const urlRelative = `cities?_page=${page}&_limit=${Environment.LIMIT_LINE}&name_like=${filter}`;
     const { data, headers } = await api.get(urlRelative);
 
     if (data) {
@@ -21,9 +21,9 @@ const getAll = async (page = 1, filter = ''): Promise<TUsersWithTotalCount | Err
   }
 };
 
-const getById = async (id: number): Promise<IUser | Error> => {
+const getById = async (id: number): Promise<ICity | Error> => {
   try {
-    const { data } = await api.get(`users/${id}`);
+    const { data } = await api.get(`cities/${id}`);
 
     if (data) {
       return data;
@@ -35,9 +35,9 @@ const getById = async (id: number): Promise<IUser | Error> => {
   }
 };
 
-const create = async (user: Omit<IDetailUser, 'id'>): Promise<number | Error> => {
+const create = async (city: Omit<IDetailCity, 'id'>): Promise<number | Error> => {
   try {
-    const { data } = await api.post<IDetailUser>('/users', user);
+    const { data } = await api.post<IDetailCity>('/cities', city);
 
     if (data) {
       return data.id;
@@ -49,9 +49,9 @@ const create = async (user: Omit<IDetailUser, 'id'>): Promise<number | Error> =>
   }
 };
 
-const updateById = async (id: number, user: IDetailUser): Promise<void | Error> => {
+const updateById = async (id: number, city: IDetailCity): Promise<void | Error> => {
   try {
-    await api.put<IDetailUser>(`users/${id}`, user);
+    await api.put<IDetailCity>(`cities/${id}`, city);
   } catch (error) {
     return new Error((error as { message: string }).message || 'Erro ao atualizar o registro');
   }
@@ -59,13 +59,13 @@ const updateById = async (id: number, user: IDetailUser): Promise<void | Error> 
 
 const deleteById = async (id: number): Promise<void | Error> => {  
   try {
-    await api.delete(`users/${id}`);
+    await api.delete(`cities/${id}`);
   } catch (error) {
     return new Error((error as { message: string }).message || 'Erro ao deletar o registro');
   }
 };
 
-export const UsersService = {
+export const CitiesService = {
   getAll,
   getById,
   create,

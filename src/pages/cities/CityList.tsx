@@ -2,9 +2,9 @@ import { useNavigate, useSearchParams } from 'react-router';
 import { ListingTool } from '@/shared/components';
 import { LayoutBasePage } from '@/shared/layouts';
 import { useEffect, useMemo, useState } from 'react';
-import { UsersService } from '@/shared/services/api/users/UsersService';
+import { CitiesService } from '@/shared/services/api/cities/CitiesService';
 import { useDebounce } from '@/shared/hooks';
-import type { IUser } from '@/shared/interfaces';
+import type { ICity } from '@/shared/interfaces';
 import {
   Icon,
   IconButton,
@@ -21,11 +21,11 @@ import {
 } from '@mui/material';
 import { Environment } from '@/shared/environment';
 
-export const UserList: React.FC = () => {
+export const CityList: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const { debounce } = useDebounce();
 
-  const [users, setUsers] = useState<IUser[]>([]);
+  const [cities, setCities] = useState<ICity[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [totalCount, setTotalCount] = useState(0);
 
@@ -43,12 +43,12 @@ export const UserList: React.FC = () => {
     setIsLoading(true);
 
     debounce(() => {
-      UsersService.getAll(page, search).then((result) => {
+      CitiesService.getAll(page, search).then((result) => {
         setIsLoading(false);
         if (result instanceof Error) {
           alert(result.message);
         } else {
-          setUsers(result.data);
+          setCities(result.data);
           setTotalCount(result.totalCount);
         }
       });
@@ -57,12 +57,12 @@ export const UserList: React.FC = () => {
 
   const handleDelete = (id: number) => {
     if (confirm('Deseja realmente excluir este registro?')) {
-      UsersService.deleteById(id).then((result) => {
+      CitiesService.deleteById(id).then((result) => {
         if (result instanceof Error) {
           alert(result.message);
         } else {
-          setUsers((prevUsers) => [...prevUsers.filter((user) => user.id !== id)]);
-          alert('Registro excluído com sucesso!');
+          setCities((prevCities) => [...prevCities.filter((city) => city.id !== id)]);
+          alert('Registro excluído com sucesso!');  
         }
       });
     }
@@ -70,13 +70,13 @@ export const UserList: React.FC = () => {
 
   return (
     <LayoutBasePage
-      title="Listagem de Usuários"
+      title="Listagem de Cidades"
       listingTool={
         <ListingTool
           showSearch
-          buttonNewLabel="Novo"
+          buttonNewLabel="Nova"
           search={search}
-          onClickButtonNew={() => navigate('/usuarios/detalhe/novo')}
+          onClickButtonNew={() => navigate('/cidades/detalhe/nova')}
           changeSearch={(value) => setSearchParams({ search: value, page: '1' }, { replace: true })}
         />
       }>
@@ -86,22 +86,20 @@ export const UserList: React.FC = () => {
             <TableRow>
               <TableCell width={100}>Ações</TableCell>
               <TableCell>Nome</TableCell>
-              <TableCell>Email</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {users.map((user) => (
-              <TableRow key={user.id}>
+            {cities.map((city) => (
+              <TableRow key={city.id}>
                 <TableCell>
-                  <IconButton size="small" onClick={() => handleDelete(user.id)}>
+                  <IconButton size="small" onClick={() => handleDelete(city.id)}>
                     <Icon>delete</Icon>
                   </IconButton>
-                  <IconButton size="small" onClick={() => navigate(`/usuarios/detalhe/${user.id}`)}>
+                  <IconButton size="small" onClick={() => navigate(`/cidades/detalhe/${city.id}`)}>
                     <Icon>edit</Icon>
                   </IconButton>
                 </TableCell>
-                <TableCell>{user.name}</TableCell>
-                <TableCell>{user.email}</TableCell>
+                <TableCell>{city.name}</TableCell>
               </TableRow>
             ))}
           </TableBody>
