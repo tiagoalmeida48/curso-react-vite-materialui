@@ -1,30 +1,26 @@
 import { TextField, type TextFieldProps } from '@mui/material';
-import { useField } from '@unform/core';
-import { useEffect, useState } from 'react';
+import { useController, type Control } from 'react-hook-form';
 
-type TVTextFieldProps = TextFieldProps & {
+type Props = TextFieldProps & {
   name: string;
+  control: Control<any>;
 };
 
-export const VTextField: React.FC<TVTextFieldProps> = ({ name, ...rest }) => {
-  const { fieldName, registerField, defaultValue, error, clearError } = useField(name);
-  const [value, setValue] = useState(defaultValue || '');
-
-  useEffect(() => {
-    registerField({
-      name: fieldName,
-      getValue: () => value,
-      setValue: (_, newValue) => setValue(newValue)
-    });
-  }, [registerField, fieldName, value]);
-
-  return <TextField
-    {...rest}
-    error={!!error}
-    helperText={error}
-    defaultValue={defaultValue}
-    value={value}
-    onChange={e => {setValue(e.target.value); rest.onChange?.(e)}}
-    onKeyDown={(e) => {error && clearError(); rest.onKeyDown?.(e)}}
-  />;
+export const VTextFieldRHF = ({ name, control, ...rest }: Props) => {
+  const {
+    field: { onChange, value, ref, onBlur },
+    fieldState: { error },
+  } = useController({ name, control });
+  
+  return (
+    <TextField
+      {...rest}
+      inputRef={ref}
+      value={value}
+      onChange={onChange}
+      onBlur={onBlur}
+      error={!!error}
+      helperText={error?.message}
+    />
+  );
 };

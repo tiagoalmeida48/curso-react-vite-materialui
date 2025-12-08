@@ -12,7 +12,6 @@ export default defineConfig([
     extends: [js.configs.recommended, tseslint.configs.recommended, reactHooks.configs.flat.recommended, reactRefresh.configs.vite],
     rules: {
       'react-refresh/only-export-components': 'off',
-      'react-hooks/exhaustive-deps': 'off',
       'react-hooks/set-state-in-effect': 'off'
     },
     languageOptions: {

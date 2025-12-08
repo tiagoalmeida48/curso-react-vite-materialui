@@ -1,10 +1,8 @@
-import { useNavigate, useSearchParams } from 'react-router';
 import { ListingTool } from '@/shared/components';
+import { useConfirmDialog, useSnackbar } from '@/shared/contexts';
+import { Environment } from '@/shared/environment';
+import { useCities, useCityDelete } from '@/shared/hooks';
 import { LayoutBasePage } from '@/shared/layouts';
-import { useEffect, useMemo, useState } from 'react';
-import { CitiesService } from '@/shared/services/api/cities/CitiesService';
-import { useDebounce } from '@/shared/hooks';
-import type { ICity } from '@/shared/interfaces';
 import {
   Icon,
   IconButton,
@@ -19,17 +17,14 @@ import {
   TableHead,
   TableRow
 } from '@mui/material';
-import { Environment } from '@/shared/environment';
+import { memo, useCallback, useMemo } from 'react';
+import { useNavigate, useSearchParams } from 'react-router';
 
-export const CityList: React.FC = () => {
+export const CityList: React.FC = memo(() => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const { debounce } = useDebounce();
-
-  const [cities, setCities] = useState<ICity[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [totalCount, setTotalCount] = useState(0);
-
   const navigate = useNavigate();
+  const { showSnackbar } = useSnackbar();
+  const { confirm } = useConfirmDialog();
 
   const search = useMemo(() => {
     return searchParams.get('search') || '';
@@ -39,34 +34,32 @@ export const CityList: React.FC = () => {
     return Number(searchParams.get('page') || '1');
   }, [searchParams]);
 
-  useEffect(() => {
-    setIsLoading(true);
+  const { data, isLoading, isError, error } = useCities(page, search);
+  const cities = data?.data || [];
+  const totalCount = data?.totalCount || 0;
 
-    debounce(() => {
-      CitiesService.getAll(page, search).then((result) => {
-        setIsLoading(false);
-        if (result instanceof Error) {
-          alert(result.message);
-        } else {
-          setCities(result.data);
-          setTotalCount(result.totalCount);
-        }
-      });
-    });
-  }, [page]);
+  const deleteMutation = useCityDelete();
 
-  const handleDelete = (id: number) => {
-    if (confirm('Deseja realmente excluir este registro?')) {
-      CitiesService.deleteById(id).then((result) => {
-        if (result instanceof Error) {
-          alert(result.message);
-        } else {
-          setCities((prevCities) => [...prevCities.filter((city) => city.id !== id)]);
-          alert('Registro excluído com sucesso!');  
-        }
-      });
-    }
-  };
+  if (isError && error) {
+    console.error('Erro ao carregar cidades:', error);
+  }
+
+  const handleDelete = useCallback(
+    async (id: number) => {
+      const confirmed = await confirm('Confirmar exclusão', 'Deseja realmente excluir este registro?');
+      if (confirmed) {
+        deleteMutation.mutate(id, {
+          onSuccess: () => {
+            showSnackbar('Registro excluído com sucesso!', 'success');
+          },
+          onError: (error) => {
+            showSnackbar(error.message, 'error');
+          }
+        });
+      }
+    },
+    [confirm, deleteMutation, showSnackbar]
+  );
 
   return (
     <LayoutBasePage
@@ -128,4 +121,4 @@ export const CityList: React.FC = () => {
       </TableContainer>
     </LayoutBasePage>
   );
-};
+});

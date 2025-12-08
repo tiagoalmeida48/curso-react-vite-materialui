@@ -1,26 +1,35 @@
+import { QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { BrowserRouter } from 'react-router';
 import { AppRoutes } from './routes';
-import { AppThemeProvider } from './shared/contexts/ThemeContext';
 import { Sidebar } from './shared/components';
-import { DrawerProvider } from './shared/contexts';
-import { AuthProvider } from './shared/contexts';
-import './shared/forms/TranslateYup';
 import { Login } from './shared/components/login/Login';
+import { AuthProvider, ConfirmDialogProvider, DrawerProvider, SnackbarProvider } from './shared/contexts';
+import { AppThemeProvider } from './shared/contexts/ThemeContext';
+import './shared/forms/TranslateYup';
+import { queryClient } from './shared/services/queryClient';
 
 export const App = () => {
   return (
-    <AuthProvider>
-      <AppThemeProvider>
-        <Login>
-          <DrawerProvider>
-            <BrowserRouter>
-              <Sidebar>
-                <AppRoutes />
-              </Sidebar>
-            </BrowserRouter>
-          </DrawerProvider>
-        </Login>
-      </AppThemeProvider>
-    </AuthProvider>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <AppThemeProvider>
+          <SnackbarProvider>
+            <ConfirmDialogProvider>
+              <Login>
+                <DrawerProvider>
+                  <BrowserRouter>
+                    <Sidebar>
+                      <AppRoutes />
+                    </Sidebar>
+                  </BrowserRouter>
+                </DrawerProvider>
+              </Login>
+            </ConfirmDialogProvider>
+          </SnackbarProvider>
+        </AppThemeProvider>
+      </AuthProvider>
+      <ReactQueryDevtools initialIsOpen={false} />
+    </QueryClientProvider>
   );
 };

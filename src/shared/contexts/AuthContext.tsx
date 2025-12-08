@@ -1,5 +1,5 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
-import { AuthService } from "../services/api/auth/AuthService";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { AuthService } from '../services/api/auth/AuthService';
 
 interface IAuthContextData {
   isAuthenticated: boolean;
@@ -21,7 +21,7 @@ export const AuthProvider: React.FC<IAuthProviderProps> = ({ children }) => {
   useEffect(() => {
     const token = localStorage.getItem(LOCAL_STORAGE_TOKEN_KEY);
     if (token) {
-      setToken(JSON.stringify(token));
+      setToken(token);
     } else {
       setToken(undefined);
     }
@@ -34,20 +34,16 @@ export const AuthProvider: React.FC<IAuthProviderProps> = ({ children }) => {
     }
     localStorage.setItem(LOCAL_STORAGE_TOKEN_KEY, JSON.stringify(response.token));
     setToken(response.token);
-  }, [])
+  }, []);
 
   const handleLogout = useCallback(() => {
     localStorage.removeItem(LOCAL_STORAGE_TOKEN_KEY);
     setToken(undefined);
-  }, [])
+  }, []);
 
   const isAuthenticated = useMemo(() => !!token, [token]);
 
-  return (
-    <AuthContext.Provider value={{ isAuthenticated, login: handleLogin, logout: handleLogout }}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={{ isAuthenticated, login: handleLogin, logout: handleLogout }}>{children}</AuthContext.Provider>;
 };
 
 export const useAuthContext = () => useContext(AuthContext);

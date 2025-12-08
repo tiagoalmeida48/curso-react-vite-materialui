@@ -1,105 +1,59 @@
 import { DetailTool } from '@/shared/components';
-import { useVForm, VForm, VTextField, type IVFormErrors } from '@/shared/forms';
+import { useConfirmDialog, useSnackbar } from '@/shared/contexts';
+import { useUserById, useUserDelete, useUserMutation } from '@/shared/hooks/useUsers';
 import { LayoutBasePage } from '@/shared/layouts';
-import { UsersService } from '@/shared/services/api/users/UsersService';
-import { Box, Grid, LinearProgress, Paper, Typography } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Box, Grid, LinearProgress, Paper, TextField, Typography } from '@mui/material';
+import { startTransition, useOptimistic } from 'react';
+import { Controller, useForm } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router';
-import * as yup from 'yup';
 import { AutoCompleteCity } from './components/AutoCompleteCity';
+import { userSchema, type UserFormData } from './schemas';
 
-interface IFormData {
-  name: string;
-  email: string;
-  cityId: number;
-}
+export const UserDetail = () => {
+  const { id } = useParams();
+  const isNew = id === 'novo';
 
-const formValidationSchema: yup.ObjectSchema<IFormData> = yup.object().shape({
-  name: yup.string().required().min(3),
-  email: yup.string().email().required(),
-  cityId: yup.number().required(),
-});
+  const navigate = useNavigate();
+  const { showSnackbar } = useSnackbar();
+  const { confirm } = useConfirmDialog();
 
-export const UserDetail: React.FC = () => {
-  const { id = 'novo' } = useParams<'id'>();
-  const navegate = useNavigate();
+  const { data: userData, isLoading } = useUserById(Number(id));
+  const user = userData instanceof Error ? undefined : userData;
 
-  const { formRef, save, saveAndClose, isSaveAndClose } = useVForm();
+  const { mutateAsync } = useUserMutation();
+  const deleteMutation = useUserDelete();
 
-  const [isLoading, setIsLoading] = useState(false);
-  const [nome, setNome] = useState('');
+  const {
+    control,
+    handleSubmit,
+    formState: { errors }
+  } = useForm<UserFormData>({
+    resolver: zodResolver(userSchema),
+    defaultValues: { name: '', email: '', cityId: undefined },
+    values: user
+  });
 
-  useEffect(() => {
-    if (id !== 'novo') {
-      setIsLoading(true);
-      UsersService.getById(Number(id)).then((result) => {
-        setIsLoading(false);
-        if (result instanceof Error) {
-          alert(result.message);
-          navegate('/usuarios');
-        } else {
-          setNome(result.name);
-          formRef.current?.setData(result);
-        }
-      });
-    } else {
-      formRef.current?.setData({
-        name: '',
-        email: '',
-        cityId: undefined
-      });
-    }
-  }, [id]);
+  const [optimisticName, setOptimisticName] = useOptimistic(user?.name || 'Novo', (_state, newName: string) => newName);
 
-  const handleSave = (data: IFormData) => {
-    formValidationSchema.validate(data, { abortEarly: false })
-      .then(() => {
-        setIsLoading(true);
-        if (id === 'novo') {
-          UsersService.create(data).then((result) => {
-            setIsLoading(false);
-            if (result instanceof Error) {
-              alert(result.message);
-            } else {
-              if (isSaveAndClose()) {
-                navegate('/usuarios');
-              } else {
-                navegate(`/usuarios/detalhe/${result}`);
-              }
-            }
-          });
-        } else {
-          UsersService.updateById(Number(id), { id: Number(id), ...data }).then((result) => {
-            setIsLoading(false);
-            if (result instanceof Error) {
-              alert(result.message);
-            } else {
-              if (isSaveAndClose()) {
-                navegate('/usuarios');
-              }
-            }
-          });
-        }
-      }).catch((errors: yup.ValidationError) => {
-        const errorMessages: IVFormErrors = {};
-        errors.inner.forEach((error) => {
-          if (!error.path) return;
-
-          errorMessages[error.path] = error.message;
-        });
-
-        formRef.current?.setErrors(errorMessages);
-      });
+  const onSubmit = (data: UserFormData) => {
+    startTransition(async () => {
+      setOptimisticName(data.name);
+      await mutateAsync({ id: isNew ? undefined : Number(id), ...data });
+      navigate('/usuarios');
+    });
   };
 
-  const handleDelete = (id: number) => {
-    if (confirm('Deseja realmente excluir este registro?')) {
-      UsersService.deleteById(id).then((result) => {
-        if (result instanceof Error) {
-          alert(result.message);
-        } else {
-          alert('Registro excluído com sucesso!');
-          navegate('/usuarios');
+  const handleDelete = async () => {
+    const confirmed = await confirm('Confirmar exclusão', 'Deseja realmente excluir este registro?');
+    if (confirmed) {
+      deleteMutation.mutate(Number(id), {
+        onSuccess: () => {
+          showSnackbar('Registro excluído com sucesso!', 'success');
+          navigate('/usuarios');
+        },
+        onError: (error) => {
+          showSnackbar(error.message, 'error');
         }
       });
     }
@@ -107,56 +61,67 @@ export const UserDetail: React.FC = () => {
 
   return (
     <LayoutBasePage
-      title={id !== 'novo' ? `Detalhes de usuário: ${nome}` : 'Novo usuário'}
+      title={id !== 'novo' ? `Detalhes de usuário: ${optimisticName}` : 'Novo usuário'}
       listingTool={
         <DetailTool
           textButtonNew="Novo"
           showButtonSaveAndBack
           showButtonNew={id !== 'novo'}
           showButtonDelete={id !== 'novo'}
-          onClickButtonSave={save}
-          onClickButtonSaveAndBack={saveAndClose}
-          onClickButtonDelete={() => handleDelete(Number(id))}
-          onClickButtonNew={() => navegate('/usuarios/detalhe/novo')}
-          onClickButtonBack={() => navegate('/usuarios')}
+          onClickButtonSave={() => handleSubmit(onSubmit)()}
+          onClickButtonSaveAndBack={() => handleSubmit(onSubmit)()}
+          onClickButtonDelete={handleDelete}
+          onClickButtonNew={() => navigate('/usuarios/detalhe/novo')}
+          onClickButtonBack={() => navigate('/usuarios')}
         />
       }>
-
-      <VForm ref={formRef} onSubmit={handleSave}>
-        <Box margin={1} display='flex' flexDirection='column' component={Paper} variant='outlined'>
-          <Grid container direction='column' padding={2} spacing={2}>
-            {isLoading && <Grid>
-              <LinearProgress variant='indeterminate' />
-            </Grid>}
-
+      <Box margin={1} display="flex" flexDirection="column" component={Paper} variant="outlined">
+        <Grid container direction="column" padding={2} spacing={2}>
+          {isLoading && (
             <Grid>
-              <Typography variant='h6'>Geral</Typography>
+              <LinearProgress variant="indeterminate" />
             </Grid>
+          )}
 
-            <Grid container direction='row' spacing={2}>
-              <Grid size={{ xs: 12, md: 6, lg: 4, xl: 2 }}>
-                <VTextField
-                  fullWidth
-                  label='Nome'
-                  name='name'
-                  disabled={isLoading}
-                  onChange={(e) => setNome(e.target.value)}
-                />
-              </Grid>
-            </Grid>
-            <Grid container direction='row' spacing={2}>
-              <Grid size={{ xs: 12, md: 6, lg: 4, xl: 2 }}>
-                <VTextField fullWidth label='Email' name='email' disabled={isLoading} />
-              </Grid>
-            </Grid>
-            <Grid container direction='row' spacing={2}>
-              <Grid size={{ xs: 12, md: 6, lg: 4, xl: 2 }}>
-                <AutoCompleteCity isExternalLoading={isLoading} />
-              </Grid>
+          <Grid>
+            <Typography variant="h6">Geral</Typography>
+          </Grid>
+
+          <Grid container direction="row" spacing={2}>
+            <Grid size={{ xs: 12, md: 6, lg: 4, xl: 2 }}>
+              <Controller
+                name="name"
+                control={control}
+                render={({ field }) => (
+                  <TextField {...field} fullWidth label="Nome" disabled={isLoading} error={!!errors.name} helperText={errors.name?.message} />
+                )}
+              />
             </Grid>
           </Grid>
-        </Box>
-      </VForm>
+          <Grid container direction="row" spacing={2}>
+            <Grid size={{ xs: 12, md: 6, lg: 4, xl: 2 }}>
+              <Controller
+                name="email"
+                control={control}
+                render={({ field }) => (
+                  <TextField {...field} fullWidth label="Email" disabled={isLoading} error={!!errors.email} helperText={errors.email?.message} />
+                )}
+              />
+            </Grid>
+          </Grid>
+          <Grid container direction="row" spacing={2}>
+            <Grid size={{ xs: 12, md: 6, lg: 4, xl: 2 }}>
+              <Controller
+                name="cityId"
+                control={control}
+                render={({ field }) => (
+                  <AutoCompleteCity isExternalLoading={isLoading} value={field.value} onChange={field.onChange} error={errors.cityId?.message} />
+                )}
+              />
+            </Grid>
+          </Grid>
+        </Grid>
+      </Box>
     </LayoutBasePage>
   );
 };

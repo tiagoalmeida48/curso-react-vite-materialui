@@ -1,9 +1,9 @@
-import { api } from '../axios-config';
 import { Environment } from '../../../environment';
-import type { TUsersWithTotalCount } from '../../../types';
 import type { IDetailUser, IUser } from '../../../interfaces';
+import type { TUsersWithTotalCount } from '../../../types';
+import { api } from '../axios-config';
 
-const getAll = async (page = 1, filter = ''): Promise<TUsersWithTotalCount | Error> => {
+const getAll = async (page = 1, filter = ''): Promise<TUsersWithTotalCount> => {
   try {
     const urlRelative = `users?_page=${page}&_limit=${Environment.LIMIT_LINE}&name_like=${filter}`;
     const { data, headers } = await api.get(urlRelative);
@@ -15,13 +15,13 @@ const getAll = async (page = 1, filter = ''): Promise<TUsersWithTotalCount | Err
       };
     }
 
-    return new Error('Erro ao listar os registros');
+    throw new Error('Erro ao listar os registros');
   } catch (error) {
-    return new Error((error as { message: string }).message || 'Erro ao listar os registros');
+    throw new Error((error as { message: string }).message || 'Erro ao listar os registros');
   }
 };
 
-const getById = async (id: number): Promise<IUser | Error> => {
+const getById = async (id: number): Promise<IUser> => {
   try {
     const { data } = await api.get(`users/${id}`);
 
@@ -29,13 +29,13 @@ const getById = async (id: number): Promise<IUser | Error> => {
       return data;
     }
 
-    return new Error('Erro ao consultar o registro');
+    throw new Error('Erro ao consultar o registro');
   } catch (error) {
-    return new Error((error as { message: string }).message || 'Erro ao consultar o registro');
+    throw new Error((error as { message: string }).message || 'Erro ao consultar o registro');
   }
 };
 
-const create = async (user: Omit<IDetailUser, 'id'>): Promise<number | Error> => {
+const create = async (user: Omit<IDetailUser, 'id'>): Promise<number> => {
   try {
     const { data } = await api.post<IDetailUser>('/users', user);
 
@@ -43,25 +43,25 @@ const create = async (user: Omit<IDetailUser, 'id'>): Promise<number | Error> =>
       return data.id;
     }
 
-    return new Error('Erro ao criar o registro');
+    throw new Error('Erro ao criar o registro');
   } catch (error) {
-    return new Error((error as { message: string }).message || 'Erro ao criar o registro');
+    throw new Error((error as { message: string }).message || 'Erro ao criar o registro');
   }
 };
 
-const updateById = async (id: number, user: IDetailUser): Promise<void | Error> => {
+const updateById = async (id: number, user: IDetailUser): Promise<void> => {
   try {
     await api.put<IDetailUser>(`users/${id}`, user);
   } catch (error) {
-    return new Error((error as { message: string }).message || 'Erro ao atualizar o registro');
+    throw new Error((error as { message: string }).message || 'Erro ao atualizar o registro');
   }
 };
 
-const deleteById = async (id: number): Promise<void | Error> => {  
+const deleteById = async (id: number): Promise<void> => {
   try {
     await api.delete(`users/${id}`);
   } catch (error) {
-    return new Error((error as { message: string }).message || 'Erro ao deletar o registro');
+    throw new Error((error as { message: string }).message || 'Erro ao deletar o registro');
   }
 };
 

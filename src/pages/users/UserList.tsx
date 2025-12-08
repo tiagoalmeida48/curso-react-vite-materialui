@@ -1,10 +1,8 @@
-import { useNavigate, useSearchParams } from 'react-router';
 import { ListingTool } from '@/shared/components';
+import { useConfirmDialog, useSnackbar } from '@/shared/contexts';
+import { Environment } from '@/shared/environment';
+import { useUserDelete, useUsers } from '@/shared/hooks';
 import { LayoutBasePage } from '@/shared/layouts';
-import { useEffect, useMemo, useState } from 'react';
-import { UsersService } from '@/shared/services/api/users/UsersService';
-import { useDebounce } from '@/shared/hooks';
-import type { IUser } from '@/shared/interfaces';
 import {
   Icon,
   IconButton,
@@ -19,17 +17,14 @@ import {
   TableHead,
   TableRow
 } from '@mui/material';
-import { Environment } from '@/shared/environment';
+import { memo, useCallback, useMemo } from 'react';
+import { useNavigate, useSearchParams } from 'react-router';
 
-export const UserList: React.FC = () => {
+export const UserList: React.FC = memo(() => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const { debounce } = useDebounce();
-
-  const [users, setUsers] = useState<IUser[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [totalCount, setTotalCount] = useState(0);
-
   const navigate = useNavigate();
+  const { showSnackbar } = useSnackbar();
+  const { confirm } = useConfirmDialog();
 
   const search = useMemo(() => {
     return searchParams.get('search') || '';
@@ -39,34 +34,32 @@ export const UserList: React.FC = () => {
     return Number(searchParams.get('page') || '1');
   }, [searchParams]);
 
-  useEffect(() => {
-    setIsLoading(true);
+  const { data, isLoading, isError, error } = useUsers(page, search);
+  const users = data?.data || [];
+  const totalCount = data?.totalCount || 0;
 
-    debounce(() => {
-      UsersService.getAll(page, search).then((result) => {
-        setIsLoading(false);
-        if (result instanceof Error) {
-          alert(result.message);
-        } else {
-          setUsers(result.data);
-          setTotalCount(result.totalCount);
-        }
-      });
-    });
-  }, [page]);
+  const deleteMutation = useUserDelete();
 
-  const handleDelete = (id: number) => {
-    if (confirm('Deseja realmente excluir este registro?')) {
-      UsersService.deleteById(id).then((result) => {
-        if (result instanceof Error) {
-          alert(result.message);
-        } else {
-          setUsers((prevUsers) => [...prevUsers.filter((user) => user.id !== id)]);
-          alert('Registro excluído com sucesso!');
-        }
-      });
-    }
-  };
+  if (isError && error) {
+    console.error('Erro ao carregar usuários:', error);
+  }
+
+  const handleDelete = useCallback(
+    async (id: number) => {
+      const confirmed = await confirm('Confirmar exclusão', 'Deseja realmente excluir este registro?');
+      if (confirmed) {
+        deleteMutation.mutate(id, {
+          onSuccess: () => {
+            showSnackbar('Registro excluído com sucesso!', 'success');
+          },
+          onError: (error) => {
+            showSnackbar(error.message, 'error');
+          }
+        });
+      }
+    },
+    [confirm, deleteMutation, showSnackbar]
+  );
 
   return (
     <LayoutBasePage
@@ -130,4 +123,4 @@ export const UserList: React.FC = () => {
       </TableContainer>
     </LayoutBasePage>
   );
-};
+});

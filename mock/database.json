@@ -7,12 +7,6 @@
       "cityId": 1
     },
     {
-      "id": 3,
-      "name": "Jane Doe",
-      "email": "jane.doe@example.com",
-      "cityId": 2
-    },
-    {
       "id": 4,
       "name": "Jane Do",
       "email": "jane.doe@example.com",
@@ -25,34 +19,16 @@
       "cityId": 2
     },
     {
-      "id": 6,
-      "name": "Jane Doe",
-      "email": "jane.doe@example.com",
-      "cityId": 1
-    },
-    {
-      "id": 7,
-      "name": "Jane Doe",
-      "email": "jane.doe@example.com",
-      "cityId": 2
-    },
-    {
-      "id": 10,
-      "name": "Jane Doe",
-      "email": "jane.doe@example.com",
-      "cityId": 2
-    },
-    {
-      "id": 11,
-      "name": "Tiago",
-      "email": "tiago@gmail.com",
-      "cityId": 1
-    },
-    {
       "name": "Tiago teste",
       "email": "tiago@hmail.com",
       "cityId": 1,
       "id": 12
+    },
+    {
+      "id": 13,
+      "name": "Teste",
+      "email": "teste@gmail.com",
+      "cityId": 1
     }
   ],
   "cities": [
