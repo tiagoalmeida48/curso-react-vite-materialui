@@ -17,5 +17,13 @@ export const Environment = {
   /**
    * Texto exibido quando a lista estiver vazia
    */
-  LIST_EMPTY: 'Nenhum registro encontrado'
+  /**
+   * Texto exibido quando a lista estiver vazia
+   */
+  LIST_EMPTY: 'Nenhum registro encontrado',
+
+  /**
+   * Delay para debounce (ms)
+   */
+  DEBOUNCE_DELAY: 500
 };

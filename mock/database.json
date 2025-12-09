@@ -23,6 +23,12 @@
       "name": "Teste",
       "email": "teste@gmail.com",
       "cityId": 1
+    },
+    {
+      "id": 14,
+      "name": "teste",
+      "email": "teste99@gmail.com",
+      "cityId": 1
     }
   ],
   "cities": [

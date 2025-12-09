@@ -4,8 +4,21 @@ import { usersQuery, useUserDelete } from '@/shared/hooks';
 import { useConfirmDialogStore } from '@/shared/hooks/useConfirmDialogStore';
 import { useSnackbarStore } from '@/shared/hooks/useSnackbarStore';
 import { LayoutBasePage } from '@/shared/layouts';
-import { Icon, IconButton, Pagination, Paper, Table, TableBody, TableCell, TableContainer, TableFooter, TableHead, TableRow } from '@mui/material';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import {
+  Icon,
+  IconButton,
+  LinearProgress,
+  Pagination,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableFooter,
+  TableHead,
+  TableRow
+} from '@mui/material';
+import { useQuery } from '@tanstack/react-query';
 import { useNavigate, useSearchParams } from 'react-router';
 
 export const UserList = () => {
@@ -18,7 +31,7 @@ export const UserList = () => {
 
   const page = () => Number(searchParams.get('page') || '1');
 
-  const { data } = useSuspenseQuery(usersQuery(page(), search()));
+  const { data, isLoading, isFetching } = useQuery(usersQuery(page(), search()));
 
   const users = data?.data || [];
   const totalCount = data?.totalCount || 0;
@@ -61,24 +74,32 @@ export const UserList = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {users.map((user) => (
-              <TableRow key={user.id}>
-                <TableCell>
-                  <IconButton size="small" onClick={() => handleDelete(user.id)}>
-                    <Icon>delete</Icon>
-                  </IconButton>
-                  <IconButton size="small" onClick={() => navigate(`/usuarios/detalhe/${user.id}`)}>
-                    <Icon>edit</Icon>
-                  </IconButton>
+            {isLoading || isFetching ? (
+              <TableRow>
+                <TableCell colSpan={3}>
+                  <LinearProgress variant="indeterminate" />
                 </TableCell>
-                <TableCell>{user.name}</TableCell>
-                <TableCell>{user.email}</TableCell>
               </TableRow>
-            ))}
+            ) : (
+              users.map((user) => (
+                <TableRow key={user.id}>
+                  <TableCell>
+                    <IconButton size="small" onClick={() => handleDelete(user.id)}>
+                      <Icon>delete</Icon>
+                    </IconButton>
+                    <IconButton size="small" onClick={() => navigate(`/usuarios/detalhe/${user.id}`)}>
+                      <Icon>edit</Icon>
+                    </IconButton>
+                  </TableCell>
+                  <TableCell>{user.name}</TableCell>
+                  <TableCell>{user.email}</TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
-          {totalCount === 0 && <caption>{Environment.LIST_EMPTY}</caption>}
+          {totalCount === 0 && !isLoading && !isFetching && <caption>{Environment.LIST_EMPTY}</caption>}
           <TableFooter>
-            {totalCount > Environment.LIMIT_LINE && (
+            {(isLoading || totalCount > Environment.LIMIT_LINE) && (
               <TableRow>
                 <TableCell colSpan={3}>
                   <Pagination

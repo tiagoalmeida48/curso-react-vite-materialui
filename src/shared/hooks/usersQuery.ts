@@ -25,8 +25,11 @@ export const useUserMutation = () => {
       if (data.id) return UsersService.updateById(data.id, data as IDetailUser);
       return UsersService.create(data as Omit<IDetailUser, 'id'>);
     },
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['users'] });
+      if (variables.id) {
+        queryClient.invalidateQueries({ queryKey: ['user', variables.id] });
+      }
     }
   });
 };

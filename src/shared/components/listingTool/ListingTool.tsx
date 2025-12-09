@@ -1,5 +1,7 @@
-import { Box, Button, Icon, InputAdornment, TextField, Paper, useTheme } from '@mui/material';
+import { Box, Button, Icon, InputAdornment, Paper, TextField, useTheme } from '@mui/material';
+import { useEffect, useState } from 'react';
 import { Environment } from '../../environment';
+import { useDebounce } from '../../hooks';
 
 interface ListingToolProps {
   search?: string;
@@ -19,14 +21,27 @@ export const ListingTool = ({
   onClickButtonNew
 }: ListingToolProps) => {
   const theme = useTheme();
+  const [internalSearch, setInternalSearch] = useState(search);
+  const debouncedSearch = useDebounce(internalSearch, Environment.DEBOUNCE_DELAY);
+
+  useEffect(() => {
+    if (debouncedSearch !== search) {
+      changeSearch?.(debouncedSearch);
+    }
+  }, [debouncedSearch, changeSearch, search]);
+
+  useEffect(() => {
+    setInternalSearch(search);
+  }, [search]);
+
   return (
     <Box height={theme.spacing(5)} marginX={1} padding={1} paddingX={1} display="flex" alignItems="center" component={Paper}>
       {showSearch && (
         <TextField
           size="small"
           placeholder={Environment.INPUT_SEARCH}
-          value={search}
-          onChange={(e) => changeSearch?.(e.target.value)}
+          value={internalSearch}
+          onChange={(e) => setInternalSearch(e.target.value)}
           slotProps={{
             input: {
               startAdornment: (

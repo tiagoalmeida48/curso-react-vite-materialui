@@ -1,73 +1,69 @@
-# React + TypeScript + Vite
+# Guia de Instalação e Execução
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Siga os passos abaixo para configurar e rodar o projeto em seu ambiente local.
 
-Currently, two official plugins are available:
+## Pré-requisitos
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Certifique-se de ter instalado em sua máquina:
 
-## React Compiler
+- **Node.js** (Versão 18 ou superior recomendada)
+- **Yarn** (Gerenciador de pacotes utilizado neste projeto)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 1. Clonar e Instalar
 
-## Expanding the ESLint configuration
+Primeiro, clone o repositório e instale as dependências:
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname
-      }
-      // other options...
-    }
-  }
-]);
+```bash
+# Instalar as dependências do projeto
+yarn install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 2. Iniciar o Backend (API Mock)
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x';
-import reactDom from 'eslint-plugin-react-dom';
+Este projeto utiliza o `json-server` para simular uma API REST completa. **É obrigatório que este servidor esteja rodando** para que a aplicação funcione corretamente (login, listagens, cadastros).
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname
-      }
-      // other options...
-    }
-  }
-]);
+Abra um terminal e execute:
+
+```bash
+yarn mock
+```
+
+> ℹ️ O servidor rodará na porta `3333` (http://localhost:3333). Mantenha este terminal aberto.
+
+## 3. Iniciar o Frontend
+
+Em um **novo terminal** (mantenha o do mock aberto), inicie a aplicação React:
+
+```bash
+yarn dev
+```
+
+> ℹ️ A aplicação estará disponível geralmente em http://localhost:5173 (confira o output do terminal).
+
+## Outros Comandos Úteis
+
+### Gerar Tipagem da API
+
+Se você alterar a estrutura do `mock/database.json`, pode regenerar os tipos TypeScript automaticamente:
+
+```bash
+yarn gen:types
+```
+
+### Build de Produção
+
+Para gerar a versão otimizada para produção:
+
+```bash
+yarn build
+```
+
+O resultado será gerado na pasta `dist`.
+
+### Linting
+
+Para verificar a qualidade do código e buscar por erros:
+
+```bash
+yarn lint
 ```

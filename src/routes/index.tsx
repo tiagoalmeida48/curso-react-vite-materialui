@@ -39,6 +39,7 @@ export const router = createBrowserRouter([
     path: '/',
     element: <RootLayout />,
     errorElement: <ErrorPage />,
+    hydrateFallbackElement: <LinearProgress variant="indeterminate" />,
     children: [
       {
         path: '/pagina-inicial',
