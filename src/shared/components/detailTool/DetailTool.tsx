@@ -21,7 +21,7 @@ interface DetailToolProps {
  onClickButtonBack?: () => void;
 }
 
-export const DetailTool: React.FC<DetailToolProps> = ({
+export const DetailTool = ({
   textButtonNew = 'Novo',
   showButtonNew = true,
   showButtonSave = true,
@@ -40,7 +40,7 @@ export const DetailTool: React.FC<DetailToolProps> = ({
   onClickButtonSaveAndBack,
   onClickButtonDelete,
   onClickButtonBack,
-}) => {
+}: DetailToolProps) => {
   const theme = useTheme();
   const smDown = useMediaQuery(theme.breakpoints.down('sm'));
   const mdDown = useMediaQuery(theme.breakpoints.down('md'));

@@ -10,14 +10,14 @@ interface ListingToolProps {
   onClickButtonNew?: () => void;
 }
 
-export const ListingTool: React.FC<ListingToolProps> = ({
+export const ListingTool = ({
   search = '',
   showSearch = false,
   changeSearch,
   buttonNewLabel = 'Novo',
   showButtonNew = true,
   onClickButtonNew
-}) => {
+}: ListingToolProps) => {
   const theme = useTheme();
   return (
     <Box height={theme.spacing(5)} marginX={1} padding={1} paddingX={1} display="flex" alignItems="center" component={Paper}>

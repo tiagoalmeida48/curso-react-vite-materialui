@@ -13,16 +13,10 @@
       "cityId": 2
     },
     {
-      "id": 5,
-      "name": "Jane Doe",
-      "email": "jane.doe@example.com",
-      "cityId": 2
-    },
-    {
+      "id": 12,
       "name": "Tiago teste",
       "email": "tiago@hmail.com",
-      "cityId": 1,
-      "id": 12
+      "cityId": 1
     },
     {
       "id": 13,

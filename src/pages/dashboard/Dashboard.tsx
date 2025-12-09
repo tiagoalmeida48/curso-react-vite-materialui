@@ -1,14 +1,14 @@
 import { DetailTool } from '@/shared/components';
-import { useCities, useUsers } from '@/shared/hooks';
+import { citiesQuery, usersQuery } from '@/shared/hooks';
 import { LayoutBasePage } from '@/shared/layouts';
 import { Box, Card, CardContent, Grid, Typography } from '@mui/material';
+import { useSuspenseQuery } from '@tanstack/react-query';
 
 export const Dashboard = () => {
-  const { data: citiesData, isLoading: isLoadingCities } = useCities(1);
-  const { data: usersData, isLoading: isLoadingUsers } = useUsers(1);
-
-  const totalCountCities = citiesData?.totalCount || 0;
-  const totalCountUsers = usersData?.totalCount || 0;
+  const { data: users } = useSuspenseQuery(usersQuery());
+  const { data: cities } = useSuspenseQuery(citiesQuery());
+  const totalCountCities = cities?.totalCount || 0;
+  const totalCountUsers = users?.totalCount || 0;
 
   return (
     <LayoutBasePage
@@ -26,8 +26,7 @@ export const Dashboard = () => {
                     Total de Usuários
                   </Typography>
                   <Box padding={6} display="flex" alignItems="center" justifyContent="center">
-                    {!isLoadingUsers && <Typography variant="h1">{totalCountUsers}</Typography>}
-                    {isLoadingUsers && <Typography variant="h4">Carregando...</Typography>}
+                    <Typography variant="h1">{totalCountUsers}</Typography>
                   </Box>
                 </CardContent>
               </Card>
@@ -39,8 +38,7 @@ export const Dashboard = () => {
                     Total de Cidades
                   </Typography>
                   <Box padding={6} display="flex" alignItems="center" justifyContent="center">
-                    {!isLoadingCities && <Typography variant="h1">{totalCountCities}</Typography>}
-                    {isLoadingCities && <Typography variant="h4">Carregando...</Typography>}
+                    <Typography variant="h1">{totalCountCities}</Typography>
                   </Box>
                 </CardContent>
               </Card>

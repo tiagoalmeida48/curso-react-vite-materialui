@@ -1,2 +1,2 @@
-export * from './user';
-export * from './city';
+export * from './user/TUsersWithTotalCount';
+export * from './city/TCitiesWithTotalCount';

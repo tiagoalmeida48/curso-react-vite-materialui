@@ -1,11 +1,12 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { keepPreviousData, queryOptions, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { IDetailUser } from '../interfaces';
 import { UsersService } from '../services/api/users/UsersService';
 
-export const useUsers = (page = 1, filter = '') => {
-  return useQuery({
+export const usersQuery = (page = 1, filter = '') => {
+  return queryOptions({
     queryKey: ['users', page, filter],
-    queryFn: () => UsersService.getAll(page, filter)
+    queryFn: () => UsersService.getAll(page, filter),
+    placeholderData: keepPreviousData
   });
 };
 

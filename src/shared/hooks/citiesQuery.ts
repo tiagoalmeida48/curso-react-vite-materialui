@@ -1,11 +1,12 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { keepPreviousData, queryOptions, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { IDetailCity } from '../interfaces';
 import { CitiesService } from '../services/api/cities/CitiesService';
 
-export const useCities = (page = 1, filter = '') => {
-  return useQuery({
+export const citiesQuery = (page = 1, filter = '') => {
+  return queryOptions({
     queryKey: ['cities', page, filter],
-    queryFn: () => CitiesService.getAll(page, filter)
+    queryFn: () => CitiesService.getAll(page, filter),
+    placeholderData: keepPreviousData
   });
 };
 

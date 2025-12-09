@@ -1,8 +1,10 @@
+import { useAuthStore } from '@/shared/hooks/useAuthStore';
+import { useDrawerStore } from '@/shared/hooks/useDrawerStore';
 import { Avatar, Box, Divider, Drawer, Icon, List, ListItemButton, ListItemIcon, ListItemText, useMediaQuery, useTheme } from '@mui/material';
-import Perfil from '../../../assets/Perfil Tiago.png';
 import { type ReactNode } from 'react';
-import { useAppThemeContext, useAuthContext, useDrawerContext } from '../../contexts';
 import { useMatch, useNavigate, useResolvedPath } from 'react-router';
+import Perfil from '../../../assets/Perfil Tiago.png';
+import { useThemeStore, type IThemeStore } from '@/shared/hooks/useThemeStore';
 
 interface SidebarProps {
   children: ReactNode;
@@ -15,7 +17,7 @@ interface ListItemLinkProps {
   onClick: (() => void) | undefined;
 }
 
-export const ListItemLink: React.FC<ListItemLinkProps> = ({ icon, label, to, onClick }) => {
+export const ListItemLink = ({ icon, label, to, onClick }: ListItemLinkProps) => {
   const navigate = useNavigate();
 
   const resolvedPath = useResolvedPath(to);
@@ -36,16 +38,19 @@ export const ListItemLink: React.FC<ListItemLinkProps> = ({ icon, label, to, onC
   );
 };
 
-export const Sidebar: React.FC<SidebarProps> = ({ children }) => {
+export const Sidebar = ({ children }: SidebarProps) => {
   const theme = useTheme();
   const smDown = useMediaQuery(theme.breakpoints.down('sm'));
-  const { drawerOpen, toggleDrawerOpen, drawerOptions } = useDrawerContext();
-  const { toggleTheme } = useAppThemeContext();
-  const { logout } = useAuthContext();
+  const isDrawerOpen = useDrawerStore((state) => state.isDrawerOpen);
+  const toggleDrawerOpen = useDrawerStore((state) => state.toggleDrawerOpen);
+  const drawerOptions = useDrawerStore((state) => state.drawerOptions);
+  const toggleTheme = useThemeStore((state: IThemeStore) => state.toggleTheme);
+
+  const { logout } = useAuthStore();
 
   return (
     <>
-      <Drawer open={drawerOpen} onClose={toggleDrawerOpen} variant={smDown ? 'temporary' : 'permanent'}>
+      <Drawer open={isDrawerOpen} onClose={toggleDrawerOpen} variant={smDown ? 'temporary' : 'permanent'}>
         <Box width={theme.spacing(28)} display="flex" flexDirection="column" height="100%">
           <Box display="flex" alignItems="center" justifyContent="center" height={theme.spacing(28)} width="100%">
             <Avatar src={Perfil} sx={{ width: theme.spacing(12), height: theme.spacing(12) }} />

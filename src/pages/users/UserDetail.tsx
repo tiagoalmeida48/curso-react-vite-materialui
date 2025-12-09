@@ -1,6 +1,7 @@
 import { DetailTool } from '@/shared/components';
-import { useConfirmDialog, useSnackbar } from '@/shared/contexts';
-import { useUserById, useUserDelete, useUserMutation } from '@/shared/hooks/useUsers';
+import { useConfirmDialogStore } from '@/shared/hooks/useConfirmDialogStore';
+import { useSnackbarStore } from '@/shared/hooks/useSnackbarStore';
+import { useUserById, useUserDelete, useUserMutation } from '@/shared/hooks/usersQuery';
 import { LayoutBasePage } from '@/shared/layouts';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Box, Grid, LinearProgress, Paper, TextField, Typography } from '@mui/material';
@@ -15,8 +16,8 @@ export const UserDetail = () => {
   const isNew = id === 'novo';
 
   const navigate = useNavigate();
-  const { showSnackbar } = useSnackbar();
-  const { confirm } = useConfirmDialog();
+  const { showSnackbar } = useSnackbarStore();
+  const { confirm } = useConfirmDialogStore();
 
   const { data: userData, isLoading } = useUserById(Number(id));
   const user = userData instanceof Error ? undefined : userData;

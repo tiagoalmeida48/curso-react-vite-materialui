@@ -1,34 +1,22 @@
 import { QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { BrowserRouter } from 'react-router';
-import { AppRoutes } from './routes';
-import { Sidebar } from './shared/components';
+import { RouterProvider } from 'react-router';
+import { router } from './routes';
+import { GlobalConfirmDialog, GlobalSnackbar } from './shared/components';
 import { Login } from './shared/components/login/Login';
-import { AuthProvider, ConfirmDialogProvider, DrawerProvider, SnackbarProvider } from './shared/contexts';
-import { AppThemeProvider } from './shared/contexts/ThemeContext';
-import './shared/forms/TranslateYup';
+import { AppThemeProvider } from './shared/providers/appThemeProvider/AppThemeProvider';
 import { queryClient } from './shared/services/queryClient';
 
 export const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <AppThemeProvider>
-          <SnackbarProvider>
-            <ConfirmDialogProvider>
-              <Login>
-                <DrawerProvider>
-                  <BrowserRouter>
-                    <Sidebar>
-                      <AppRoutes />
-                    </Sidebar>
-                  </BrowserRouter>
-                </DrawerProvider>
-              </Login>
-            </ConfirmDialogProvider>
-          </SnackbarProvider>
-        </AppThemeProvider>
-      </AuthProvider>
+      <AppThemeProvider>
+        <Login>
+          <RouterProvider router={router} />
+          <GlobalSnackbar />
+          <GlobalConfirmDialog />
+        </Login>
+      </AppThemeProvider>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );

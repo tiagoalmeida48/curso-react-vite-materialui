@@ -1,6 +1,7 @@
 import { DetailTool } from '@/shared/components';
-import { useConfirmDialog, useSnackbar } from '@/shared/contexts';
-import { useCityById, useCityDelete, useCityMutation } from '@/shared/hooks/useCities';
+import { useCityById, useCityDelete, useCityMutation } from '@/shared/hooks/citiesQuery';
+import { useConfirmDialogStore } from '@/shared/hooks/useConfirmDialogStore';
+import { useSnackbarStore } from '@/shared/hooks/useSnackbarStore';
 import { LayoutBasePage } from '@/shared/layouts';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Box, Grid, LinearProgress, Paper, TextField, Typography } from '@mui/material';
@@ -14,8 +15,8 @@ export const CityDetail = () => {
   const isNew = id === 'nova';
 
   const navigate = useNavigate();
-  const { showSnackbar } = useSnackbar();
-  const { confirm } = useConfirmDialog();
+  const { showSnackbar } = useSnackbarStore();
+  const { confirm } = useConfirmDialogStore();
 
   const { data: cityData, isLoading } = useCityById(Number(id));
   const city = cityData instanceof Error ? undefined : cityData;

@@ -1,65 +1,42 @@
 import { ListingTool } from '@/shared/components';
-import { useConfirmDialog, useSnackbar } from '@/shared/contexts';
 import { Environment } from '@/shared/environment';
-import { useCities, useCityDelete } from '@/shared/hooks';
+import { citiesQuery, useCityDelete } from '@/shared/hooks';
+import { useConfirmDialogStore } from '@/shared/hooks/useConfirmDialogStore';
+import { useSnackbarStore } from '@/shared/hooks/useSnackbarStore';
 import { LayoutBasePage } from '@/shared/layouts';
-import {
-  Icon,
-  IconButton,
-  LinearProgress,
-  Pagination,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableFooter,
-  TableHead,
-  TableRow
-} from '@mui/material';
-import { memo, useCallback, useMemo } from 'react';
+import { Icon, IconButton, Pagination, Paper, Table, TableBody, TableCell, TableContainer, TableFooter, TableHead, TableRow } from '@mui/material';
+import { useSuspenseQuery } from '@tanstack/react-query';
 import { useNavigate, useSearchParams } from 'react-router';
 
-export const CityList: React.FC = memo(() => {
+export const CityList = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { showSnackbar } = useSnackbar();
-  const { confirm } = useConfirmDialog();
+  const { showSnackbar } = useSnackbarStore();
+  const { confirm } = useConfirmDialogStore();
 
-  const search = useMemo(() => {
-    return searchParams.get('search') || '';
-  }, [searchParams]);
+  const search = () => searchParams.get('search') || '';
 
-  const page = useMemo(() => {
-    return Number(searchParams.get('page') || '1');
-  }, [searchParams]);
+  const page = () => Number(searchParams.get('page') || '1');
 
-  const { data, isLoading, isError, error } = useCities(page, search);
+  const { data } = useSuspenseQuery(citiesQuery(page(), search()));
   const cities = data?.data || [];
   const totalCount = data?.totalCount || 0;
 
   const deleteMutation = useCityDelete();
 
-  if (isError && error) {
-    console.error('Erro ao carregar cidades:', error);
-  }
-
-  const handleDelete = useCallback(
-    async (id: number) => {
-      const confirmed = await confirm('Confirmar exclusão', 'Deseja realmente excluir este registro?');
-      if (confirmed) {
-        deleteMutation.mutate(id, {
-          onSuccess: () => {
-            showSnackbar('Registro excluído com sucesso!', 'success');
-          },
-          onError: (error) => {
-            showSnackbar(error.message, 'error');
-          }
-        });
-      }
-    },
-    [confirm, deleteMutation, showSnackbar]
-  );
+  const handleDelete = async (id: number) => {
+    const confirmed = await confirm('Confirmar exclusão', 'Deseja realmente excluir este registro?');
+    if (confirmed) {
+      deleteMutation.mutate(id, {
+        onSuccess: () => {
+          showSnackbar('Registro excluído com sucesso!', 'success');
+        },
+        onError: (error) => {
+          showSnackbar(error.message, 'error');
+        }
+      });
+    }
+  };
 
   return (
     <LayoutBasePage
@@ -68,7 +45,7 @@ export const CityList: React.FC = memo(() => {
         <ListingTool
           showSearch
           buttonNewLabel="Nova"
-          search={search}
+          search={search()}
           onClickButtonNew={() => navigate('/cidades/detalhe/nova')}
           changeSearch={(value) => setSearchParams({ search: value, page: '1' }, { replace: true })}
         />
@@ -96,22 +73,15 @@ export const CityList: React.FC = memo(() => {
               </TableRow>
             ))}
           </TableBody>
-          {totalCount === 0 && !isLoading && <caption>{Environment.LIST_EMPTY}</caption>}
+          {totalCount === 0 && <caption>{Environment.LIST_EMPTY}</caption>}
           <TableFooter>
-            {isLoading && (
-              <TableRow>
-                <TableCell colSpan={3}>
-                  <LinearProgress variant="indeterminate" />
-                </TableCell>
-              </TableRow>
-            )}
-            {!isLoading && totalCount > Environment.LIMIT_LINE && (
+            {totalCount > Environment.LIMIT_LINE && (
               <TableRow>
                 <TableCell colSpan={3}>
                   <Pagination
-                    page={page}
+                    page={page()}
                     count={Math.ceil(totalCount / Environment.LIMIT_LINE)}
-                    onChange={(_, newPage) => setSearchParams({ search, page: newPage.toString() }, { replace: true })}
+                    onChange={(_, newPage) => setSearchParams({ search: search(), page: newPage.toString() }, { replace: true })}
                   />
                 </TableCell>
               </TableRow>
@@ -121,4 +91,4 @@ export const CityList: React.FC = memo(() => {
       </TableContainer>
     </LayoutBasePage>
   );
-});
+};

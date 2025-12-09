@@ -1,5 +1,5 @@
 import { Box, Icon, IconButton, Typography, useMediaQuery, useTheme, type Theme } from '@mui/material';
-import { useDrawerContext } from '../contexts';
+import { useDrawerStore } from '@/shared/hooks/useDrawerStore';
 
 interface LayoutBasePageProps {
   children: React.ReactNode;
@@ -7,11 +7,11 @@ interface LayoutBasePageProps {
   title: string;
 }
 
-export const LayoutBasePage: React.FC<LayoutBasePageProps> = ({ children, listingTool, title }) => {
+export const LayoutBasePage = ({ children, listingTool, title }: LayoutBasePageProps) => {
   const smDown = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'));
   const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down('md'));
   const theme = useTheme();
-  const { toggleDrawerOpen } = useDrawerContext();
+  const { toggleDrawerOpen } = useDrawerStore();
 
   return (
     <Box height="100%" display="flex" flexDirection="column" gap={1}>
