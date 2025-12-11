@@ -1,7 +1,5 @@
 import { DetailTool } from '@/shared/components';
-import { useConfirmDialogStore } from '@/shared/hooks/useConfirmDialogStore';
-import { useSnackbarStore } from '@/shared/hooks/useSnackbarStore';
-import { useUserById, useUserDelete, useUserMutation } from '@/shared/hooks/usersQuery';
+import { useConfirmDialogStore, useSnackbarStore, useGetByIdUser, useDeleteUser, useCreateOrUpdateUser } from '@/shared/hooks';
 import { LayoutBasePage } from '@/shared/layouts';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Box, Grid, LinearProgress, Paper, TextField, Typography } from '@mui/material';
@@ -19,11 +17,11 @@ export const UserDetail = () => {
   const { showSnackbar } = useSnackbarStore();
   const { confirm } = useConfirmDialogStore();
 
-  const { data: userData, isLoading } = useUserById(Number(id));
+  const { data: userData, isLoading } = useGetByIdUser(Number(id));
   const user = userData instanceof Error ? undefined : userData;
 
-  const { mutateAsync } = useUserMutation();
-  const deleteMutation = useUserDelete();
+  const { mutateAsync } = useCreateOrUpdateUser();
+  const deleteMutation = useDeleteUser();
 
   const {
     control,
@@ -32,10 +30,10 @@ export const UserDetail = () => {
   } = useForm<UserFormData>({
     resolver: zodResolver(userSchema),
     defaultValues: { name: '', email: '', cityId: undefined },
-    values: user
+    values: user?.data
   });
 
-  const [optimisticName, setOptimisticName] = useOptimistic(user?.name || 'Novo', (_state, newName: string) => newName);
+  const [optimisticName, setOptimisticName] = useOptimistic(user?.data.name || 'Novo', (_state, newName: string) => newName);
 
   const onSubmit = (data: UserFormData) => {
     startTransition(async () => {

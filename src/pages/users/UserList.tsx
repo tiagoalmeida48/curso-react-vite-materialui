@@ -1,8 +1,6 @@
 import { ListingTool } from '@/shared/components';
 import { Environment } from '@/shared/environment';
-import { usersQuery, useUserDelete } from '@/shared/hooks';
-import { useConfirmDialogStore } from '@/shared/hooks/useConfirmDialogStore';
-import { useSnackbarStore } from '@/shared/hooks/useSnackbarStore';
+import { useGetAllUser, useDeleteUser, useConfirmDialogStore, useSnackbarStore } from '@/shared/hooks';
 import { LayoutBasePage } from '@/shared/layouts';
 import {
   Icon,
@@ -31,12 +29,12 @@ export const UserList = () => {
 
   const page = () => Number(searchParams.get('page') || '1');
 
-  const { data, isLoading, isFetching } = useQuery(usersQuery(page(), search()));
+  const { data, isLoading, isFetching } = useQuery(useGetAllUser(page(), search()));
 
-  const users = data?.data || [];
+  const users = data?.items || [];
   const totalCount = data?.totalCount || 0;
 
-  const deleteMutation = useUserDelete();
+  const deleteMutation = useDeleteUser();
 
   const handleDelete = async (id: number) => {
     const confirmed = await confirm('Confirmar exclusão', 'Deseja realmente excluir este registro?');

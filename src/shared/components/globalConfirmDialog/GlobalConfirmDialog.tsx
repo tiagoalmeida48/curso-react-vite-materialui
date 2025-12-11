@@ -1,5 +1,5 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
-import { useConfirmDialogStore } from '@/shared/hooks/useConfirmDialogStore';
+import { useConfirmDialogStore } from '@/shared/hooks';
 
 export const GlobalConfirmDialog = () => {
   const { open, title, description, onConfirm, onCancel, isLoading } = useConfirmDialogStore();

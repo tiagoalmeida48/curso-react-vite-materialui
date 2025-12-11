@@ -1,5 +1,5 @@
 import { Box, Icon, IconButton, Typography, useMediaQuery, useTheme, type Theme } from '@mui/material';
-import { useDrawerStore } from '@/shared/hooks/useDrawerStore';
+import { useDrawerStore } from '@/shared/hooks';
 
 interface LayoutBasePageProps {
   children: React.ReactNode;

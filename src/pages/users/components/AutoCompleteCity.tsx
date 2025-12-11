@@ -1,4 +1,4 @@
-import { citiesQuery, useCityById, useDebounce } from '@/shared/hooks';
+import { useGetAllCity, useGetByIdCity, useDebounce } from '@/shared/hooks';
 import { Autocomplete, CircularProgress, TextField } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -19,11 +19,11 @@ export const AutoCompleteCity = ({ isExternalLoading = false, value, onChange, e
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebounce(search);
 
-  const { data: citiesData, isLoading: isLoadingCities } = useQuery(citiesQuery(1, debouncedSearch));
-  const { data: selectedCity } = useCityById(value || 0);
+  const { data: citiesData, isLoading: isLoadingCities } = useQuery(useGetAllCity(1, debouncedSearch));
+  const { data: selectedCity } = useGetByIdCity(value || 0);
 
   const options: TAutoCompleteOption[] = useMemo(() => {
-    const cities = citiesData?.data || [];
+    const cities = citiesData?.items || [];
     return cities.map((city) => ({ id: city.id, label: city.name }));
   }, [citiesData]);
 
@@ -31,8 +31,8 @@ export const AutoCompleteCity = ({ isExternalLoading = false, value, onChange, e
     if (!value) return null;
     const optionInList = options.find((option) => option.id === value);
     if (optionInList) return optionInList;
-    if (selectedCity && selectedCity.id === value) {
-      return { id: selectedCity.id, label: selectedCity.name };
+    if (selectedCity && selectedCity.data.id === value) {
+      return { id: selectedCity.data.id, label: selectedCity.data.name };
     }
     return null;
   }, [value, options, selectedCity]);

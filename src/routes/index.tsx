@@ -1,12 +1,8 @@
-import { Sidebar } from '@/shared/components';
-import { ErrorPage } from '@/shared/components/errorPage/ErrorPage';
-import { useDrawerStore } from '@/shared/hooks/useDrawerStore';
+import { Sidebar, ErrorPage } from '@/shared/components';
+import { useDrawerStore } from '@/shared/hooks';
 import { LinearProgress } from '@mui/material';
 import { lazy, Suspense, useEffect } from 'react';
 import { createBrowserRouter, Navigate, Outlet } from 'react-router';
-import { citiesQuery } from '../shared/hooks/citiesQuery';
-import { usersQuery } from '../shared/hooks/usersQuery';
-import { queryClient } from '../shared/services/queryClient';
 
 const Dashboard = lazy(() => import('../pages/dashboard/Dashboard').then((m) => ({ default: m.Dashboard })));
 const UserList = lazy(() => import('../pages/users/UserList').then((m) => ({ default: m.UserList })));
@@ -47,8 +43,7 @@ export const router = createBrowserRouter([
       },
       {
         path: '/usuarios',
-        element: <UserList />,
-        loader: () => queryClient.ensureQueryData(usersQuery())
+        element: <UserList />
       },
       {
         path: '/usuarios/detalhe/:id',
@@ -56,8 +51,7 @@ export const router = createBrowserRouter([
       },
       {
         path: '/cidades',
-        element: <CityList />,
-        loader: () => queryClient.ensureQueryData(citiesQuery())
+        element: <CityList />
       },
       {
         path: '/cidades/detalhe/:id',

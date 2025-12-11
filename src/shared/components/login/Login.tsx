@@ -1,4 +1,4 @@
-import { useAuthStore } from '@/shared/hooks/useAuthStore';
+import { useAuthStore } from '@/shared/hooks';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Box, Button, Card, CardActions, CardContent, CircularProgress, TextField, Typography } from '@mui/material';
 import { useState, type ReactNode } from 'react';

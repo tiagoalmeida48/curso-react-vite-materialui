@@ -1,7 +1,7 @@
+import { Environment } from '@/shared/environment';
+import { useDebounce } from '@/shared/hooks';
 import { Box, Button, Icon, InputAdornment, Paper, TextField, useTheme } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { Environment } from '../../environment';
-import { useDebounce } from '../../hooks';
 
 interface ListingToolProps {
   search?: string;
@@ -35,7 +35,7 @@ export const ListingTool = ({
   }, [search]);
 
   return (
-    <Box height={theme.spacing(5)} marginX={1} padding={1} paddingX={1} display="flex" alignItems="center" component={Paper}>
+    <Box height={theme.spacing(5)} marginX={1} padding={4} paddingX={1} display="flex" alignItems="center" component={Paper}>
       {showSearch && (
         <TextField
           size="small"

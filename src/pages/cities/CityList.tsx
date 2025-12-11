@@ -1,8 +1,6 @@
 import { ListingTool } from '@/shared/components';
 import { Environment } from '@/shared/environment';
-import { citiesQuery, useCityDelete } from '@/shared/hooks';
-import { useConfirmDialogStore } from '@/shared/hooks/useConfirmDialogStore';
-import { useSnackbarStore } from '@/shared/hooks/useSnackbarStore';
+import { useConfirmDialogStore, useDeleteCity, useGetAllCity, useSnackbarStore } from '@/shared/hooks';
 import { LayoutBasePage } from '@/shared/layouts';
 import {
   Icon,
@@ -28,14 +26,13 @@ export const CityList = () => {
   const { confirm } = useConfirmDialogStore();
 
   const search = () => searchParams.get('search') || '';
-
   const page = () => Number(searchParams.get('page') || '1');
 
-  const { data, isLoading, isFetching } = useQuery(citiesQuery(page(), search()));
-  const cities = data?.data || [];
+  const { data, isLoading, isFetching } = useQuery(useGetAllCity(page(), search()));
+  const cities = data?.items || [];
   const totalCount = data?.totalCount || 0;
 
-  const deleteMutation = useCityDelete();
+  const deleteMutation = useDeleteCity();
 
   const handleDelete = async (id: number) => {
     const confirmed = await confirm('Confirmar exclusão', 'Deseja realmente excluir este registro?');

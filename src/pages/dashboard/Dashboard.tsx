@@ -1,12 +1,12 @@
 import { DetailTool } from '@/shared/components';
-import { citiesQuery, usersQuery } from '@/shared/hooks';
+import { useGetAllCity, useGetAllUser } from '@/shared/hooks';
 import { LayoutBasePage } from '@/shared/layouts';
 import { Box, Card, CardContent, Grid, Typography } from '@mui/material';
 import { useSuspenseQuery } from '@tanstack/react-query';
 
 export const Dashboard = () => {
-  const { data: users } = useSuspenseQuery(usersQuery());
-  const { data: cities } = useSuspenseQuery(citiesQuery());
+  const { data: users } = useSuspenseQuery(useGetAllUser());
+  const { data: cities } = useSuspenseQuery(useGetAllCity());
   const totalCountCities = cities?.totalCount || 0;
   const totalCountUsers = users?.totalCount || 0;
 

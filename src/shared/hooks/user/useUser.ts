@@ -1,29 +1,29 @@
 import { keepPreviousData, queryOptions, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import type { IDetailUser } from '../interfaces';
-import { UsersService } from '../services/api/users/UsersService';
+import type { IDetailUser } from '@/shared/interfaces';
+import { userService } from '@/shared/services';
 
-export const usersQuery = (page = 1, filter = '') => {
+export const useGetAllUser = (page = 1, filter = '') => {
   return queryOptions({
     queryKey: ['users', page, filter],
-    queryFn: () => UsersService.getAll(page, filter),
+    queryFn: () => userService.getAllUser(page, filter),
     placeholderData: keepPreviousData
   });
 };
 
-export const useUserById = (id: number | string) => {
+export const useGetByIdUser = (id: number | string) => {
   return useQuery({
     queryKey: ['user', id],
-    queryFn: () => UsersService.getById(Number(id)),
+    queryFn: () => userService.getByIdUser(Number(id)),
     enabled: !!id && id !== 'novo'
   });
 };
 
-export const useUserMutation = () => {
+export const useCreateOrUpdateUser = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (data: Partial<IDetailUser> & { id?: number }): Promise<number | void> => {
-      if (data.id) return UsersService.updateById(data.id, data as IDetailUser);
-      return UsersService.create(data as Omit<IDetailUser, 'id'>);
+      if (data.id) return userService.updateByIdUser(data.id, data as IDetailUser);
+      return userService.createUser(data as Omit<IDetailUser, 'id'>);
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['users'] });
@@ -34,10 +34,10 @@ export const useUserMutation = () => {
   });
 };
 
-export const useUserDelete = () => {
+export const useDeleteUser = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (id: number): Promise<void> => UsersService.deleteById(id),
+    mutationFn: (id: number): Promise<void> => userService.deleteByIdUser(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] });
     }

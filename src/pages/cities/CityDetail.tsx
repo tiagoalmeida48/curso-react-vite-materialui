@@ -1,7 +1,5 @@
 import { DetailTool } from '@/shared/components';
-import { useCityById, useCityDelete, useCityMutation } from '@/shared/hooks/citiesQuery';
-import { useConfirmDialogStore } from '@/shared/hooks/useConfirmDialogStore';
-import { useSnackbarStore } from '@/shared/hooks/useSnackbarStore';
+import { useGetByIdCity, useDeleteCity, useCreateOrUpdateCity, useConfirmDialogStore, useSnackbarStore } from '@/shared/hooks';
 import { LayoutBasePage } from '@/shared/layouts';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Box, Grid, LinearProgress, Paper, TextField, Typography } from '@mui/material';
@@ -18,11 +16,11 @@ export const CityDetail = () => {
   const { showSnackbar } = useSnackbarStore();
   const { confirm } = useConfirmDialogStore();
 
-  const { data: cityData, isLoading } = useCityById(Number(id));
+  const { data: cityData, isLoading } = useGetByIdCity(Number(id));
   const city = cityData instanceof Error ? undefined : cityData;
 
-  const { mutateAsync } = useCityMutation();
-  const deleteMutation = useCityDelete();
+  const { mutateAsync } = useCreateOrUpdateCity();
+  const deleteMutation = useDeleteCity();
 
   const {
     control,
@@ -31,10 +29,10 @@ export const CityDetail = () => {
   } = useForm<CityFormData>({
     resolver: zodResolver(citySchema),
     defaultValues: { name: '' },
-    values: city
+    values: city?.data
   });
 
-  const [optimisticName, setOptimisticName] = useOptimistic(city?.name || 'Nova', (_state, newName: string) => newName);
+  const [optimisticName, setOptimisticName] = useOptimistic(city?.data?.name || 'Nova', (_state, newName: string) => newName);
 
   const onSubmit = (data: CityFormData) => {
     startTransition(async () => {

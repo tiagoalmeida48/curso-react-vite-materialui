@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { AuthService } from '../services/api/auth/AuthService';
+import { authService } from '@/shared/services';
 
 interface IAuthStore {
   token: string | undefined;
@@ -19,14 +19,14 @@ export const useAuthStore = create<IAuthStore>((set) => {
     isAuthenticated: !!initialToken,
 
     login: async (email, password) => {
-      const response = await AuthService.auth(email, password);
+      const response = await authService.auth(email, password);
 
       if (response instanceof Error) {
         return response.message;
       }
 
-      localStorage.setItem(LOCAL_STORAGE_TOKEN_KEY, JSON.stringify(response.token));
-      set({ token: response.token, isAuthenticated: true });
+      localStorage.setItem(LOCAL_STORAGE_TOKEN_KEY, JSON.stringify(response));
+      set({ token: response.data, isAuthenticated: true });
     },
 
     logout: () => {
