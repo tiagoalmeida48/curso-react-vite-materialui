@@ -1,4 +1,3 @@
-import { DetailTool } from '@/shared/components';
 import { useGetAllCity, useGetAllUser } from '@/shared/hooks';
 import { LayoutBasePage } from '@/shared/layouts';
 import { Box, Card, CardContent, Grid, Typography } from '@mui/material';
@@ -11,13 +10,9 @@ export const Dashboard = () => {
   const totalCountUsers = users?.totalCount || 0;
 
   return (
-    <LayoutBasePage
-      title="Página Inicial"
-      listingTool={
-        <DetailTool showButtonNew={false} showButtonSaveAndBack={false} showButtonDelete={false} showButtonSave={false} showButtonBack={false} />
-      }>
+    <LayoutBasePage title="Página Inicial" listingTool="">
       <Box width="100%" display="flex" flexDirection="column">
-        <Grid container margin={2} display="flex" flexDirection="column">
+        <Grid container margin={1} marginY={10} display="flex" flexDirection="column">
           <Grid container spacing={2}>
             <Grid size={{ xs: 12, md: 6, lg: 4, xl: 2 }}>
               <Card>

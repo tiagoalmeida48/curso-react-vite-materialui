@@ -16,7 +16,8 @@ import {
   TableHead,
   TableRow
 } from '@mui/material';
-import { useQuery } from '@tanstack/react-query';
+import { useSuspenseQuery } from '@tanstack/react-query';
+import { useTransition } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
 
 export const CityList = () => {
@@ -25,10 +26,12 @@ export const CityList = () => {
   const { showSnackbar } = useSnackbarStore();
   const { confirm } = useConfirmDialogStore();
 
+  const [isPending, startTransition] = useTransition();
+
   const search = () => searchParams.get('search') || '';
   const page = () => Number(searchParams.get('page') || '1');
 
-  const { data, isLoading, isFetching } = useQuery(useGetAllCity(page(), search()));
+  const { data, isFetching } = useSuspenseQuery(useGetAllCity(page(), search()));
   const cities = data?.items || [];
   const totalCount = data?.totalCount || 0;
 
@@ -57,7 +60,7 @@ export const CityList = () => {
           buttonNewLabel="Nova"
           search={search()}
           onClickButtonNew={() => navigate('/cidades/detalhe/nova')}
-          changeSearch={(value) => setSearchParams({ search: value, page: '1' }, { replace: true })}
+          changeSearch={(value) => startTransition(() => setSearchParams({ search: value, page: '1' }, { replace: true }))}
         />
       }>
       <TableContainer component={Paper} variant="outlined" sx={{ m: 1, width: 'auto' }}>
@@ -69,13 +72,14 @@ export const CityList = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {isLoading || isFetching ? (
+            {(isFetching || isPending) && (
               <TableRow>
                 <TableCell colSpan={2}>
                   <LinearProgress variant="indeterminate" />
                 </TableCell>
               </TableRow>
-            ) : (
+            )}
+            {!(isFetching || isPending) &&
               cities.map((city) => (
                 <TableRow key={city.id}>
                   <TableCell>
@@ -88,10 +92,9 @@ export const CityList = () => {
                   </TableCell>
                   <TableCell>{city.name}</TableCell>
                 </TableRow>
-              ))
-            )}
+              ))}
           </TableBody>
-          {totalCount === 0 && !isLoading && !isFetching && <caption>{Environment.LIST_EMPTY}</caption>}
+          {totalCount === 0 && !(isFetching || isPending) && <caption>{Environment.LIST_EMPTY}</caption>}
           <TableFooter>
             {totalCount > Environment.LIMIT_LINE && (
               <TableRow>

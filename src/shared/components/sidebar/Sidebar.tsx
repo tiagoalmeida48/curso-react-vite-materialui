@@ -67,7 +67,7 @@ export const Sidebar = ({ children }: SidebarProps) => {
     <>
       <Drawer open={isDrawerOpen} onClose={toggleDrawerOpen} variant={smDown ? 'temporary' : 'permanent'}>
         <Box width={theme.spacing(28)} display="flex" flexDirection="column" height="100%">
-          <Box display="flex" alignItems="center" justifyContent="center" height={theme.spacing(28)} width="100%">
+          <Box display="flex" alignItems="center" justifyContent="center" height={theme.spacing(21)} width="100%">
             <Avatar src={Perfil} sx={{ width: theme.spacing(12), height: theme.spacing(12) }} />
           </Box>
 

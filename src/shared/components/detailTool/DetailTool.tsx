@@ -46,7 +46,7 @@ export const DetailTool = ({
   const mdDown = useMediaQuery(theme.breakpoints.down('md'));
   
   return (
-    <Box height={theme.spacing(5)} marginX={1} padding={1} gap={1} paddingX={1} display="flex" alignItems="center" component={Paper}>
+    <Box height={theme.spacing(5)} marginX={1} padding={4} gap={1} paddingX={1} display="flex" alignItems="center" component={Paper}>
       {showButtonSave && !showButtonSaveLoading && 
         <Button variant="contained" color="primary" disableElevation onClick={onClickButtonSave} startIcon={<Icon>save</Icon>}>
           <Typography variant="button" whiteSpace="nowrap" textOverflow="ellipsis" overflow="hidden">

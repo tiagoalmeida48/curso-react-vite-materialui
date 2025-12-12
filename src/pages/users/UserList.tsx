@@ -1,6 +1,6 @@
 import { ListingTool } from '@/shared/components';
 import { Environment } from '@/shared/environment';
-import { useGetAllUser, useDeleteUser, useConfirmDialogStore, useSnackbarStore } from '@/shared/hooks';
+import { useConfirmDialogStore, useDeleteUser, useGetAllUser, useSnackbarStore } from '@/shared/hooks';
 import { LayoutBasePage } from '@/shared/layouts';
 import {
   Icon,
@@ -16,7 +16,8 @@ import {
   TableHead,
   TableRow
 } from '@mui/material';
-import { useQuery } from '@tanstack/react-query';
+import { useSuspenseQuery } from '@tanstack/react-query';
+import { useTransition } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
 
 export const UserList = () => {
@@ -25,11 +26,13 @@ export const UserList = () => {
   const { showSnackbar } = useSnackbarStore();
   const { confirm } = useConfirmDialogStore();
 
+  const [isPending, startTransition] = useTransition();
+
   const search = () => searchParams.get('search') || '';
 
   const page = () => Number(searchParams.get('page') || '1');
 
-  const { data, isLoading, isFetching } = useQuery(useGetAllUser(page(), search()));
+  const { data, isFetching } = useSuspenseQuery(useGetAllUser(page(), search()));
 
   const users = data?.items || [];
   const totalCount = data?.totalCount || 0;
@@ -59,7 +62,7 @@ export const UserList = () => {
           buttonNewLabel="Novo"
           search={search()}
           onClickButtonNew={() => navigate('/usuarios/detalhe/novo')}
-          changeSearch={(value) => setSearchParams({ search: value, page: '1' }, { replace: true })}
+          changeSearch={(value) => startTransition(() => setSearchParams({ search: value, page: '1' }, { replace: true }))}
         />
       }>
       <TableContainer component={Paper} variant="outlined" sx={{ m: 1, width: 'auto' }}>
@@ -72,13 +75,14 @@ export const UserList = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {isLoading || isFetching ? (
+            {(isFetching || isPending) && (
               <TableRow>
                 <TableCell colSpan={3}>
                   <LinearProgress variant="indeterminate" />
                 </TableCell>
               </TableRow>
-            ) : (
+            )}
+            {!(isFetching || isPending) &&
               users.map((user) => (
                 <TableRow key={user.id}>
                   <TableCell>
@@ -92,12 +96,11 @@ export const UserList = () => {
                   <TableCell>{user.name}</TableCell>
                   <TableCell>{user.email}</TableCell>
                 </TableRow>
-              ))
-            )}
+              ))}
           </TableBody>
-          {totalCount === 0 && !isLoading && !isFetching && <caption>{Environment.LIST_EMPTY}</caption>}
+          {totalCount === 0 && !(isFetching || isPending) && <caption>{Environment.LIST_EMPTY}</caption>}
           <TableFooter>
-            {(isLoading || totalCount > Environment.LIMIT_LINE) && (
+            {totalCount > Environment.LIMIT_LINE && (
               <TableRow>
                 <TableCell colSpan={3}>
                   <Pagination
