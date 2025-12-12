@@ -4,10 +4,3 @@ export interface IUser {
     email: string;
     cityId: number;
 }
-
-export interface IDetailUser {
-    id: number;
-    name: string;
-    email: string;
-    cityId: number;
-}

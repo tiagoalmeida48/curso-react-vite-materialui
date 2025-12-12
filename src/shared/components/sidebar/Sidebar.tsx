@@ -1,4 +1,3 @@
-import { useAuthStore, useDrawerStore } from '@/shared/hooks';
 import {
   Avatar,
   Box,
@@ -8,80 +7,35 @@ import {
   List,
   ListItemButton,
   ListItemIcon,
-  ListItemText,
-  useColorScheme,
-  useMediaQuery,
-  useTheme
+  ListItemText
 } from '@mui/material';
-import { type ReactNode } from 'react';
-import { useMatch, useNavigate, useResolvedPath } from 'react-router';
+import { type PropsWithChildren } from 'react';
 import Perfil from '../../../assets/Perfil Tiago.png';
+import { ListItemLink } from './listItemLink/ListItemLink';
+import { useSidebar } from './useSidebar';
 
-interface SidebarProps {
-  children: ReactNode;
-}
-
-interface ListItemLinkProps {
-  icon: string;
-  label: string;
-  to: string;
-  onClick: (() => void) | undefined;
-}
-
-export const ListItemLink = ({ icon, label, to, onClick }: ListItemLinkProps) => {
-  const navigate = useNavigate();
-
-  const resolvedPath = useResolvedPath(to);
-  const match = useMatch({ path: resolvedPath.pathname, end: false });
-
-  const handleClick = () => {
-    navigate(to);
-    onClick?.();
-  };
-
-  return (
-    <ListItemButton selected={!!match} onClick={handleClick}>
-      <ListItemIcon>
-        <Icon>{icon}</Icon>
-      </ListItemIcon>
-      <ListItemText primary={label} />
-    </ListItemButton>
-  );
-};
-
-export const Sidebar = ({ children }: SidebarProps) => {
-  const theme = useTheme();
-  const { mode, setMode } = useColorScheme();
-  const smDown = useMediaQuery(theme.breakpoints.down('sm'));
-  const isDrawerOpen = useDrawerStore((state) => state.isDrawerOpen);
-  const toggleDrawerOpen = useDrawerStore((state) => state.toggleDrawerOpen);
-  const drawerOptions = useDrawerStore((state) => state.drawerOptions);
-
-  const toggleTheme = () => {
-    setMode(mode === 'light' ? 'dark' : 'light');
-  };
-
-  const { logout } = useAuthStore();
+export const Sidebar = ({ children }: PropsWithChildren) => {
+  const { state, actions } = useSidebar();
 
   return (
     <>
-      <Drawer open={isDrawerOpen} onClose={toggleDrawerOpen} variant={smDown ? 'temporary' : 'permanent'}>
-        <Box width={theme.spacing(28)} display="flex" flexDirection="column" height="100%">
-          <Box display="flex" alignItems="center" justifyContent="center" height={theme.spacing(21)} width="100%">
-            <Avatar src={Perfil} sx={{ width: theme.spacing(12), height: theme.spacing(12) }} />
+      <Drawer open={state.isDrawerOpen} onClose={actions.toggleDrawerOpen} variant={state.smDown ? 'temporary' : 'permanent'}>
+        <Box width={state.theme.spacing(28)} display="flex" flexDirection="column" height="100%">
+          <Box display="flex" alignItems="center" justifyContent="center" height={state.theme.spacing(21)} width="100%">
+            <Avatar src={Perfil} sx={{ width: state.theme.spacing(12), height: state.theme.spacing(12) }} />
           </Box>
 
           <Divider />
 
           <Box flex={1}>
             <List component="nav">
-              {drawerOptions.map((option) => (
+              {state.drawerOptions.map((option) => (
                 <ListItemLink
                   key={option.label}
                   icon={option.icon}
                   label={option.label}
                   to={option.path}
-                  onClick={smDown ? toggleDrawerOpen : undefined}
+                  onClick={state.smDown ? actions.toggleDrawerOpen : undefined}
                 />
               ))}
             </List>
@@ -89,13 +43,13 @@ export const Sidebar = ({ children }: SidebarProps) => {
 
           <Box>
             <List component="nav">
-              <ListItemButton onClick={toggleTheme}>
+              <ListItemButton onClick={actions.toggleTheme}>
                 <ListItemIcon>
                   <Icon>dark_mode</Icon>
                 </ListItemIcon>
                 <ListItemText primary="Alternar Tema" />
               </ListItemButton>
-              <ListItemButton onClick={logout}>
+              <ListItemButton onClick={actions.logout}>
                 <ListItemIcon>
                   <Icon>logout</Icon>
                 </ListItemIcon>
@@ -105,7 +59,7 @@ export const Sidebar = ({ children }: SidebarProps) => {
           </Box>
         </Box>
       </Drawer>
-      <Box height="100vh" marginLeft={smDown ? 0 : theme.spacing(28)}>
+      <Box height="100vh" marginLeft={state.smDown ? 0 : state.theme.spacing(28)}>
         {children}
       </Box>
     </>

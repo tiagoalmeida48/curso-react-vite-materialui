@@ -1,38 +1,12 @@
-import { useAuthStore } from '@/shared/hooks';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { Box, Button, Card, CardActions, CardContent, CircularProgress, TextField, Typography } from '@mui/material';
-import { useState, type ReactNode } from 'react';
-import { useForm } from 'react-hook-form';
-import { loginSchema, type LoginFormData } from './schemas';
+import { type PropsWithChildren } from 'react';
+import { useLogin } from './useLogin';
 
-interface ILoginProps {
-  children: ReactNode;
-}
+export const Login = ({ children }: PropsWithChildren) => {
+  const { state, actions } = useLogin();
 
-export const Login = ({ children }: ILoginProps) => {
-  const { isAuthenticated, login } = useAuthStore();
-  const [isLoading, setIsLoading] = useState(false);
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors }
-  } = useForm<LoginFormData>({
-    resolver: zodResolver(loginSchema),
-    defaultValues: { email: '', password: '' }
-  });
-
-  if (isAuthenticated) return <>{children}</>;
-
-  const onSubmit = async (data: LoginFormData) => {
-    setIsLoading(true);
-    try {
-      await login(data.email, data.password);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
+  if (state.isAuthenticated) return <>{children}</>;
+  
   return (
     <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100vw', height: '100vh' }}>
       <Card>
@@ -47,10 +21,10 @@ export const Login = ({ children }: ILoginProps) => {
               variant="outlined"
               fullWidth
               type="email"
-              disabled={isLoading}
-              error={!!errors.email}
-              helperText={errors.email?.message}
-              {...register('email')}
+              disabled={state.isLoading}
+              error={!!state.errors.email}
+              helperText={state.errors.email?.message}
+              {...actions.register('email')}
             />
 
             <TextField
@@ -58,10 +32,10 @@ export const Login = ({ children }: ILoginProps) => {
               variant="outlined"
               fullWidth
               type="password"
-              disabled={isLoading}
-              error={!!errors.password}
-              helperText={errors.password?.message}
-              {...register('password')}
+              disabled={state.isLoading}
+              error={!!state.errors.password}
+              helperText={state.errors.password?.message}
+              {...actions.register('password')}
             />
           </Box>
         </CardContent>
@@ -69,9 +43,9 @@ export const Login = ({ children }: ILoginProps) => {
           <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
             <Button
               variant="contained"
-              onClick={handleSubmit(onSubmit)}
-              disabled={isLoading}
-              endIcon={isLoading && <CircularProgress variant="indeterminate" size={20} color="inherit" />}>
+              onClick={actions.handleSubmit(actions.onSubmit)}
+              disabled={state.isLoading}
+              endIcon={state.isLoading && <CircularProgress variant="indeterminate" size={20} color="inherit" />}>
               Entrar
             </Button>
           </Box>

@@ -1,38 +1,16 @@
 import { Environment } from '@/shared/environment';
-import { useDebounce } from '@/shared/hooks';
-import { Box, Button, Icon, InputAdornment, Paper, TextField, useTheme } from '@mui/material';
-import { useEffect, useState } from 'react';
-
-interface ListingToolProps {
-  search?: string;
-  showSearch?: boolean;
-  changeSearch?: (value: string) => void;
-  buttonNewLabel?: string;
-  showButtonNew?: boolean;
-  onClickButtonNew?: () => void;
-}
+import { Box, Button, Icon, InputAdornment, Paper, TextField } from '@mui/material';
+import { useListingTool, type IListingToolProps } from './useListingTool';
 
 export const ListingTool = ({
   search = '',
   showSearch = false,
-  changeSearch,
   buttonNewLabel = 'Novo',
   showButtonNew = true,
+  changeSearch,
   onClickButtonNew
-}: ListingToolProps) => {
-  const theme = useTheme();
-  const [internalSearch, setInternalSearch] = useState(search);
-  const debouncedSearch = useDebounce(internalSearch, Environment.DEBOUNCE_DELAY);
-
-  useEffect(() => {
-    if (debouncedSearch !== search) {
-      changeSearch?.(debouncedSearch);
-    }
-  }, [debouncedSearch, changeSearch, search]);
-
-  useEffect(() => {
-    setInternalSearch(search);
-  }, [search]);
+}: IListingToolProps) => {
+  const { internalSearch, theme, setInternalSearch } = useListingTool({ search, changeSearch });
 
   return (
     <Box height={theme.spacing(5)} marginX={1} padding={4} paddingX={1} display="flex" alignItems="center" component={Paper}>

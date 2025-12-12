@@ -1,6 +1,6 @@
 import { Box, Button, Divider, Icon, Paper, Skeleton, Typography, useMediaQuery, useTheme } from '@mui/material';
 
-interface DetailToolProps {
+export interface IDetailToolProps {
  textButtonNew?: string;
  showButtonNew?: boolean;
  showButtonSave?: boolean;
@@ -40,7 +40,7 @@ export const DetailTool = ({
   onClickButtonSaveAndBack,
   onClickButtonDelete,
   onClickButtonBack,
-}: DetailToolProps) => {
+}: IDetailToolProps) => {
   const theme = useTheme();
   const smDown = useMediaQuery(theme.breakpoints.down('sm'));
   const mdDown = useMediaQuery(theme.breakpoints.down('md'));
