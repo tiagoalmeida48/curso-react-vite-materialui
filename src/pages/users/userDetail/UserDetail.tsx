@@ -36,35 +36,52 @@ export const UserDetail = () => {
             <Typography variant="h6">Geral</Typography>
           </Grid>
 
-          <Grid container direction="row" spacing={2}>
-            <Grid size={{ xs: 12, md: 6, lg: 4, xl: 2 }}>
+          <Grid container spacing={2}>
+            <Grid size={{ lg: 12 }}>
               <Controller
                 name="name"
                 control={state.control}
                 render={({ field }) => (
-                  <TextField {...field} fullWidth label="Nome" disabled={state.isLoading} error={!!state.errors.name} helperText={state.errors.name?.message} />
+                  <TextField
+                    {...field}
+                    fullWidth
+                    label="Nome"
+                    disabled={state.isLoading}
+                    error={!!state.errors.name}
+                    helperText={state.errors.name?.message}
+                  />
                 )}
               />
             </Grid>
-          </Grid>
-          <Grid container direction="row" spacing={2}>
-            <Grid size={{ xs: 12, md: 6, lg: 4, xl: 2 }}>
+
+            <Grid size={{ lg: 12 }}>
               <Controller
                 name="email"
                 control={state.control}
                 render={({ field }) => (
-                  <TextField {...field} fullWidth label="Email" disabled={state.isLoading} error={!!state.errors.email} helperText={state.errors.email?.message} />
+                  <TextField
+                    {...field}
+                    fullWidth
+                    label="Email"
+                    disabled={state.isLoading}
+                    error={!!state.errors.email}
+                    helperText={state.errors.email?.message}
+                  />
                 )}
               />
             </Grid>
-          </Grid>
-          <Grid container direction="row" spacing={2}>
-            <Grid size={{ xs: 12, md: 6, lg: 4, xl: 2 }}>
+
+            <Grid size={{ lg: 12 }}>
               <Controller
                 name="cityId"
                 control={state.control}
                 render={({ field }) => (
-                  <AutoCompleteCity isExternalLoading={state.isLoading} value={field.value} onChange={field.onChange} error={state.errors.cityId?.message} />
+                  <AutoCompleteCity
+                    isExternalLoading={state.isLoading}
+                    value={field.value}
+                    onChange={field.onChange}
+                    error={state.errors.cityId?.message}
+                  />
                 )}
               />
             </Grid>

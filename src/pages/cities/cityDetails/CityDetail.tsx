@@ -36,12 +36,19 @@ export const CityDetail = () => {
           </Grid>
 
           <Grid container direction="row" spacing={2}>
-            <Grid size={{ xs: 12, md: 6, lg: 4, xl: 2 }}>
+            <Grid size={{ lg: 12 }}>
               <Controller
                 name="name"
                 control={state.control}
                 render={({ field }) => (
-                  <TextField {...field} fullWidth label="Nome" disabled={state.isLoading} error={!!state.errors.name} helperText={state.errors.name?.message} />
+                  <TextField
+                    {...field}
+                    fullWidth
+                    label="Nome"
+                    disabled={state.isLoading}
+                    error={!!state.errors.name}
+                    helperText={state.errors.name?.message}
+                  />
                 )}
               />
             </Grid>

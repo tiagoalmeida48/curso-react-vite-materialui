@@ -14,7 +14,7 @@ export const Dashboard = () => {
       <Box width="100%" display="flex" flexDirection="column">
         <Grid container margin={1} marginY={10} display="flex" flexDirection="column">
           <Grid container spacing={2}>
-            <Grid size={{ xs: 12, md: 6, lg: 4, xl: 2 }}>
+            <Grid size={{ xs: 12, md: 6, lg: 4 }}>
               <Card>
                 <CardContent>
                   <Typography variant="h5" align="center">
@@ -26,7 +26,7 @@ export const Dashboard = () => {
                 </CardContent>
               </Card>
             </Grid>
-            <Grid size={{ xs: 12, md: 6, lg: 4, xl: 2 }}>
+            <Grid size={{ xs: 12, md: 6, lg: 4 }}>
               <Card>
                 <CardContent>
                   <Typography variant="h5" align="center">
