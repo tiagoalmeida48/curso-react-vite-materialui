@@ -1,0 +1,4 @@
+# AJUSTES DE MELHORIAS E AJUSTES NO PROJETO
+
+⦁	tanstack router
+⦁	react context
